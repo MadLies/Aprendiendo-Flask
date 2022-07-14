@@ -1,7 +1,8 @@
-from flask import Flask, render_template, url_for
-from forms import RegistraitionFrom , LoginFrom
+from flask import Flask, render_template, url_for , flash , redirect
+from forms import RegistrationForm , LoginForm
 app = Flask(__name__)
-
+#import secrets
+#secrets.token_hex(16)
 app.config['SECRET_KEY'] = 'aff4a3b186f04ee3aef69e2bc888492c'
 #diccionarios
 posts = [ 
@@ -29,15 +30,25 @@ def home():
 def about():
 	return render_template("about.html",title = "about")
 
-@app.route("/register")
-	def register():
-		form = RegistraitionFrom()
+@app.route("/register", methods= ['GET', 'POST'])
+def register():
+		form = RegistrationForm()
+		if form.validate_on_submit():
+			flash(f'Accout created for {form.username.data}!','success')
+			return redirect(url_for('home'))
 		return render_template('register.html' ,title = "Register", form=form )
 
-@app.route("/login")
-	def login():
-		form = LoginFrom()
-		return render_template('login.html' ,title = "login", form=form )
+@app.route("/login" , methods= ['GET', 'POST'])
+def login():
+		form = LoginForm()
+		if form.validate_on_submit():
+			if form.email.data == "hola@gmail.com" and form.password.data == "1234" :
+				flash("holiii ", "success")
+				return redirect(url_for('home'))
+			else:
+				flash("puto") 
+
+		return render_template('login.html' ,title = "Login", form=form )
 
 
 if __name__ == '__main__':
